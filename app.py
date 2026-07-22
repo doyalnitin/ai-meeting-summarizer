@@ -237,7 +237,8 @@ st.markdown("""
 
 @st.cache_resource
 def get_client():
-    return genai.Client()
+    api_key = st.secrets.get("GEMINI_API_KEY", os.environ.get("GEMINI_API_KEY"))
+    return genai.Client(api_key=api_key)
 
 client = get_client()
 
