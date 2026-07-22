@@ -72,33 +72,37 @@ st.markdown("""
     }
 
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background: transparent;
-        border-bottom: none;
-        padding: 0;
+        gap: 4px !important;
+        background: #f0f0f0 !important;
+        border-radius: 12px !important;
+        padding: 5px !important;
+        border: none !important;
     }
     .stTabs [data-baseweb="tab"] {
-        border-radius: 10px 10px 0 0;
-        padding: 0.75rem 1.5rem;
-        font-size: 0.88rem;
-        font-weight: 500;
-        color: #aaa;
-        background: transparent;
-        border: none;
-        transition: all 0.2s ease;
+        border-radius: 10px !important;
+        padding: 0.7rem 1.5rem !important;
+        font-size: 0.88rem !important;
+        font-weight: 500 !important;
+        color: #666 !important;
+        background: transparent !important;
+        border: none !important;
+        transition: all 0.2s ease !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        color: #666;
-        background: #f5f5f5;
+        color: #333 !important;
+        background: #e8e8e8 !important;
     }
     .stTabs [aria-selected="true"] {
-        background: #fff !important;
+        background: #ffffff !important;
         color: #1a1a1a !important;
-        box-shadow: 0 -2px 0 0 #1a1a1a inset;
-        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        font-weight: 600 !important;
     }
     .stTabs [data-baseweb="tab-highlight"] {
-        display: none;
+        display: none !important;
+    }
+    .stTabs [data-baseweb="tab-border"] {
+        display: none !important;
     }
 
     .stFileUploader {
