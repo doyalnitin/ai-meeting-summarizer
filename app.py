@@ -5,81 +5,242 @@ from google.genai import types
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 
-# Page configuration
 st.set_page_config(
     page_title="AI Meeting Summarizer",
-    page_icon="🎙️",
+    page_icon="✦",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for modern styling
 st.markdown("""
 <style>
-    .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 10px;
-        color: white;
-        text-align: center;
-        margin-bottom: 2rem;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * { font-family: 'Inter', sans-serif !important; }
+
+    .stApp { background: #fafafa; }
+
+    section[data-testid="stSidebar"] {
+        background: #fff;
+        border-right: 1px solid #f0f0f0;
     }
-    .main-header h1 {
-        color: white !important;
-        font-size: 2.5rem;
+    section[data-testid="stSidebar"] .stMarkdown h2,
+    section[data-testid="stSidebar"] .stMarkdown h3 {
+        color: #1a1a1a;
+        font-weight: 600;
+    }
+
+    .block-container {
+        padding-top: 2.5rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .title-section {
+        text-align: center;
+        padding: 3rem 0 2rem 0;
+    }
+    .title-section h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f0f0f;
+        letter-spacing: -0.02em;
         margin-bottom: 0.5rem;
     }
-    .main-header p {
-        color: rgba(255,255,255,0.9) !important;
-        font-size: 1.1rem;
+    .title-section p {
+        color: #888;
+        font-size: 1rem;
+        font-weight: 400;
     }
-    .feature-card {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 4px solid #667eea;
-        margin-bottom: 1rem;
+
+    .pill-row {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
     }
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 100px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        background: #f5f5f5;
+        color: #555;
+    }
+
     .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
+        gap: 0;
+        background: #f5f5f5;
+        border-radius: 10px;
+        padding: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        padding: 10px 20px;
-        border-radius: 5px 5px 0 0;
-        background-color: #f0f2f6;
+        border-radius: 8px;
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #888;
+        background: transparent;
+        border: none;
     }
     .stTabs [aria-selected="true"] {
-        background-color: #667eea !important;
-        color: white !important;
+        background: #fff !important;
+        color: #1a1a1a !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
-    div[data-testid="stDownloadButton"] > button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+
+    .stFileUploader {
+        border: 1px dashed #ddd;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .stTextArea textarea {
+        border-radius: 10px;
+        border: 1px solid #e8e8e8;
+        background: #fff;
+        font-size: 0.9rem;
+    }
+    .stTextArea textarea:focus {
+        border-color: #1a1a1a;
+        box-shadow: 0 0 0 1px #1a1a1a;
+    }
+
+    div[data-testid="stButton"] > button {
+        background: #1a1a1a;
+        color: #fff;
         border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        width: 100%;
+        border-radius: 8px;
+        padding: 0.55rem 1.5rem;
+        font-weight: 500;
+        font-size: 0.85rem;
+        transition: all 0.15s ease;
+    }
+    div[data-testid="stButton"] > button:hover {
+        background: #333;
+        transform: translateY(-1px);
+    }
+
+    div[data-testid="stDownloadButton"] > button {
+        background: #fff;
+        color: #1a1a1a;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.82rem;
     }
     div[data-testid="stDownloadButton"] > button:hover {
-        opacity: 0.9;
+        border-color: #1a1a1a;
+        background: #f9f9f9;
     }
-    .sidebar .sidebar-content {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+
+    .summary-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
     }
-    .stAlert {
+    .summary-card h4 {
+        margin: 0 0 0.75rem 0;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #999;
+    }
+    .summary-card p, .summary-card li {
+        color: #333;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .decision-item {
+        padding: 0.75rem 1rem;
+        background: #fafafa;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        border-left: 2px solid #1a1a1a;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .action-item {
+        padding: 0.85rem 1rem;
+        background: #fafafa;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        border-left: 2px solid #10b981;
+    }
+    .action-item .task {
+        font-weight: 500;
+        color: #1a1a1a;
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+    .action-item .meta {
+        font-size: 0.78rem;
+        color: #999;
+    }
+    .action-item .meta span {
+        background: #f0f0f0;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        margin-right: 0.4rem;
+    }
+
+    .topic-item {
+        padding: 1rem 1.2rem;
+        background: #fff;
+        border: 1px solid #eee;
         border-radius: 10px;
+        margin-bottom: 0.75rem;
+    }
+    .topic-item h5 {
+        margin: 0 0 0.6rem 0;
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    .topic-item ul {
+        margin: 0;
+        padding-left: 1.2rem;
+    }
+    .topic-item li {
+        font-size: 0.85rem;
+        color: #666;
+        line-height: 1.7;
+    }
+
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #bbb;
+        margin-bottom: 1rem;
+    }
+
+    .stAlert { border-radius: 10px; }
+    .stSpinner > div { text-align: center; }
+
+    hr {
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 1.5rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize Gemini Client
 @st.cache_resource
 def get_client():
     return genai.Client()
 
 client = get_client()
 
-# --- Pydantic Data Schema ---
 class ActionItem(BaseModel):
     task: str = Field(description="Action item or task to be completed.")
     assignee: str = Field(description="Person responsible, or 'Unassigned' if not mentioned.")
@@ -96,7 +257,6 @@ class MeetingSummary(BaseModel):
     action_items: list[ActionItem] = Field(description="Extracted list of actionable tasks.")
     topic_breakdown: list[TopicSummary] = Field(description="Detailed discussion broken down by topic.")
 
-# Helper to extract text from uploaded PDF or TXT files
 def extract_text_from_file(uploaded_file) -> str:
     if uploaded_file.name.endswith('.pdf'):
         pdf_reader = PdfReader(uploaded_file)
@@ -104,16 +264,14 @@ def extract_text_from_file(uploaded_file) -> str:
         for page in pdf_reader.pages:
             text += page.extract_text() or ""
         return text
-    else:  # .txt file
+    else:
         return uploaded_file.read().decode("utf-8")
 
-# --- Processing Function ---
 def process_meeting_input(contents: list) -> MeetingSummary:
     prompt = """
     You are an expert AI executive assistant. Analyze the provided meeting recording or transcript 
     and extract a structured summary.
     """
-    
     response = client.models.generate_content(
         model='gemini-2.5-flash',
         contents=[prompt] + contents,
@@ -125,196 +283,144 @@ def process_meeting_input(contents: list) -> MeetingSummary:
     )
     return MeetingSummary.model_validate_json(response.text)
 
-# --- Sidebar ---
-with st.sidebar:
-    st.markdown("## 🎙️ AI Meeting Summarizer")
-    st.markdown("---")
-    st.markdown("### ℹ️ How it works")
-    st.markdown("""
-    1. Upload or paste your meeting transcript
-    2. AI analyzes the content
-    3. Get structured summary with:
-       - Executive summary
-       - Key decisions
-       - Action items
-       - Topic breakdown
-    """)
-    st.markdown("---")
-    st.markdown("### 🔑 Supported Formats")
-    st.markdown("""
-    - **Audio:** MP3, WAV, M4A, AAC, OGG
-    - **Documents:** PDF, TXT
-    - **Text:** Direct paste
-    """)
-    st.markdown("---")
-    st.markdown("### 🛠️ Tech Stack")
-    st.markdown("""
-    - Google Gemini AI
-    - Streamlit
-    - Pydantic
-    - PyPDF
-    """)
-
-# --- Main Header ---
 st.markdown("""
-<div class="main-header">
-    <h1>🎙️ AI Meeting Summarizer</h1>
-    <p>Transform your meetings into actionable insights with AI-powered analysis</p>
+<div class="title-section">
+    <h1>AI Meeting Summarizer</h1>
+    <p>Drop in a transcript, get a structured summary in seconds.</p>
+    <div class="pill-row">
+        <span class="pill">✦ Gemini 2.5 Flash</span>
+        <span class="pill">音频 Audio</span>
+        <span class="pill">📄 PDF / TXT</span>
+        <span class="pill">✍️ Paste Text</span>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- Feature Cards ---
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.markdown("""
-    <div class="feature-card">
-        <h4>📝 Smart Summaries</h4>
-        <p>Get concise executive summaries of your meetings</p>
-    </div>
-    """, unsafe_allow_html=True)
-with col2:
-    st.markdown("""
-    <div class="feature-card">
-        <h4>✅ Action Items</h4>
-        <p>Automatically extract tasks with assignees and deadlines</p>
-    </div>
-    """, unsafe_allow_html=True)
-with col3:
-    st.markdown("""
-    <div class="feature-card">
-        <h4>📊 Topic Breakdown</h4>
-        <p>Organized discussion points by topic</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("---")
-
-# --- Input Tabs ---
-tab_audio, tab_file, tab_text = st.tabs([
-    "🎤 Upload Audio", 
-    "📄 Upload Transcript", 
-    "✍️ Paste Text"
-])
+tab_audio, tab_file, tab_text = st.tabs(["Audio", "Document", "Text"])
 
 contents_to_process = []
 should_process = False
 
-# 1. Audio Upload Tab
 with tab_audio:
-    st.markdown("### 🎤 Upload Audio Recording")
-    st.markdown("Upload your meeting recording for AI-powered analysis.")
+    st.markdown("")
     uploaded_audio = st.file_uploader(
-        "Choose an audio file", 
+        "Upload audio recording",
         type=["mp3", "wav", "m4a", "aac", "ogg"],
-        help="Supported formats: MP3, WAV, M4A, AAC, OGG"
+        label_visibility="collapsed"
     )
     if uploaded_audio:
-        st.markdown("#### 🎵 Audio Preview")
         st.audio(uploaded_audio, format=uploaded_audio.type)
-        st.success(f"✅ Loaded: **{uploaded_audio.name}** ({uploaded_audio.size/1024:.1f} KB)")
-        if st.button("🚀 Generate Summary from Audio", type="primary", key="btn_audio", use_container_width=True):
-            audio_data = types.Part.from_bytes(
-                data=uploaded_audio.read(),
-                mime_type=uploaded_audio.type,
-            )
-            contents_to_process = [audio_data]
-            should_process = True
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            if st.button("Summarize", key="btn_audio", use_container_width=True):
+                audio_data = types.Part.from_bytes(
+                    data=uploaded_audio.read(),
+                    mime_type=uploaded_audio.type,
+                )
+                contents_to_process = [audio_data]
+                should_process = True
 
-# 2. PDF / TXT File Tab
 with tab_file:
-    st.markdown("### 📄 Upload Transcript Document")
-    st.markdown("Upload a PDF or TXT file containing your meeting transcript.")
+    st.markdown("")
     uploaded_doc = st.file_uploader(
-        "Choose a document", 
+        "Upload transcript",
         type=["pdf", "txt"],
-        help="Supported formats: PDF, TXT"
+        label_visibility="collapsed"
     )
     if uploaded_doc:
-        st.success(f"✅ Loaded: **{uploaded_doc.name}** ({uploaded_doc.size/1024:.1f} KB)")
-        if st.button("🚀 Generate Summary from Document", type="primary", key="btn_doc", use_container_width=True):
-            extracted_text = extract_text_from_file(uploaded_doc)
-            if extracted_text.strip():
-                contents_to_process = [extracted_text]
+        st.markdown(f"<p style='color:#999;font-size:0.82rem;margin-top:0.5rem;'>{uploaded_doc.name}</p>", unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            if st.button("Summarize", key="btn_doc", use_container_width=True):
+                extracted_text = extract_text_from_file(uploaded_doc)
+                if extracted_text.strip():
+                    contents_to_process = [extracted_text]
+                    should_process = True
+                else:
+                    st.error("No readable text found.")
+
+with tab_text:
+    st.markdown("")
+    transcript_text = st.text_area(
+        "Paste transcript",
+        height=220,
+        placeholder="Paste your meeting transcript, notes, or discussion here...",
+        label_visibility="collapsed"
+    )
+    col1, col2, col3 = st.columns([1, 1, 1])
+    with col2:
+        if st.button("Summarize", key="btn_text", use_container_width=True):
+            if transcript_text.strip():
+                contents_to_process = [transcript_text]
                 should_process = True
             else:
-                st.error("❌ Could not extract any readable text from this file.")
+                st.warning("Please paste a transcript first.")
 
-# 3. Paste Text Tab
-with tab_text:
-    st.markdown("### ✍️ Paste Meeting Transcript")
-    st.markdown("Paste your meeting notes or transcript directly.")
-    transcript_text = st.text_area(
-        "Enter your meeting transcript here:", 
-        height=250,
-        placeholder="Paste your meeting transcript, notes, or discussion here..."
-    )
-    if st.button("🚀 Generate Summary from Text", type="primary", key="btn_text", use_container_width=True):
-        if transcript_text.strip():
-            contents_to_process = [transcript_text]
-            should_process = True
-        else:
-            st.warning("⚠️ Please paste a transcript before submitting.")
-
-# --- Processing & Output Section ---
 if should_process and contents_to_process:
-    with st.spinner("🔄 Analyzing meeting content with Gemini AI..."):
+    with st.spinner("Analyzing with Gemini..."):
         try:
             summary = process_meeting_input(contents_to_process)
-            
-            st.markdown("---")
-            
-            # Title Section
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown(f"<p class='section-label'>Result</p>", unsafe_allow_html=True)
+            st.markdown(f"<h2 style='font-size:1.5rem;font-weight:700;color:#0f0f0f;margin-bottom:0.25rem;'>{summary.title}</h2>", unsafe_allow_html=True)
+
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 10px; color: white; margin-bottom: 1.5rem;">
-                <h2 style="margin: 0; color: white;">📌 {summary.title}</h2>
+            <div class="summary-card">
+                <h4>Executive Summary</h4>
+                <p>{summary.executive_summary}</p>
             </div>
             """, unsafe_allow_html=True)
-            
-            # Executive Summary Card
-            st.markdown("### 📝 Executive Summary")
-            st.info(summary.executive_summary)
-            
-            # Two Column Layout for Decisions and Actions
-            col1, col2 = st.columns(2)
-            
-            # Key Decisions
-            with col1:
-                st.markdown("### 🎯 Key Decisions")
-                for i, decision in enumerate(summary.key_decisions, 1):
-                    st.markdown(f"""
-                    <div style="background: #f0f7ff; padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid #667eea;">
-                        <strong>{i}.</strong> {decision}
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-            # Action Items
-            with col2:
-                st.markdown("### ✅ Action Items")
-                for item in summary.action_items:
-                    st.markdown(f"""
-                    <div style="background: #f0fff4; padding: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem; border-left: 3px solid #48bb78;">
-                        <strong>📋 {item.task}</strong><br>
-                        <small>👤 <code>{item.assignee}</code> | 📅 <code>{item.deadline}</code></small>
-                    </div>
-                    """, unsafe_allow_html=True)
-            
-            # Topic Breakdown
-            st.markdown("---")
-            st.markdown("### 💡 Topic Breakdown")
-            for topic in summary.topic_breakdown:
-                with st.expander(f"📌 {topic.topic}", expanded=True):
-                    for point in topic.key_points:
-                        st.markdown(f"""
-                        <div style="padding: 0.3rem 0; border-bottom: 1px solid #eee;">
-                            • {point}
-                        </div>
-                        """, unsafe_allow_html=True)
 
-            # Export Section
-            st.markdown("---")
-            st.markdown("### 📥 Export Summary")
-            
-            # Generate different export formats
+            col1, col2 = st.columns(2)
+
+            with col1:
+                decisions_html = ""
+                for i, d in enumerate(summary.key_decisions, 1):
+                    decisions_html += f"<div class='decision-item'><strong>{i}.</strong> {d}</div>"
+                st.markdown(f"""
+                <div class="summary-card">
+                    <h4>Key Decisions</h4>
+                    {decisions_html}
+                </div>
+                """, unsafe_allow_html=True)
+
+            with col2:
+                actions_html = ""
+                for item in summary.action_items:
+                    actions_html += f"""
+                    <div class="action-item">
+                        <div class="task">{item.task}</div>
+                        <div class="meta"><span>{item.assignee}</span><span>{item.deadline}</span></div>
+                    </div>
+                    """
+                st.markdown(f"""
+                <div class="summary-card">
+                    <h4>Action Items</h4>
+                    {actions_html}
+                </div>
+                """, unsafe_allow_html=True)
+
+            topics_html = ""
+            for topic in summary.topic_breakdown:
+                points = "".join([f"<li>{p}</li>" for p in topic.key_points])
+                topics_html += f"""
+                <div class="topic-item">
+                    <h5>{topic.topic}</h5>
+                    <ul>{points}</ul>
+                </div>
+                """
+
+            st.markdown(f"""
+            <div class="summary-card">
+                <h4>Topic Breakdown</h4>
+                {topics_html}
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            import json
             markdown_export = f"# {summary.title}\n\n## Executive Summary\n{summary.executive_summary}\n\n## Key Decisions\n"
             markdown_export += "\n".join([f"- {d}" for d in summary.key_decisions])
             markdown_export += "\n\n## Action Items\n"
@@ -323,38 +429,32 @@ if should_process and contents_to_process:
             for topic in summary.topic_breakdown:
                 markdown_export += f"\n### {topic.topic}\n"
                 markdown_export += "\n".join([f"- {point}" for point in topic.key_points])
-            
-            # JSON export
-            import json
+
             json_export = json.dumps(summary.model_dump(), indent=2)
-            
+
             col1, col2 = st.columns(2)
             with col1:
                 st.download_button(
-                    label="📥 Download as Markdown",
+                    label="Download Markdown",
                     data=markdown_export,
-                    file_name=f"{summary.title.lower().replace(' ', '_')}_summary.md",
+                    file_name=f"{summary.title.lower().replace(' ', '_')}.md",
                     mime="text/markdown",
                     use_container_width=True
                 )
             with col2:
                 st.download_button(
-                    label="📥 Download as JSON",
+                    label="Download JSON",
                     data=json_export,
-                    file_name=f"{summary.title.lower().replace(' ', '_')}_summary.json",
+                    file_name=f"{summary.title.lower().replace(' ', '_')}.json",
                     mime="application/json",
                     use_container_width=True
                 )
 
         except Exception as e:
-            st.error(f"❌ Error processing meeting: {str(e)}")
-            st.info("💡 Make sure you have set up your GEMINI_API_KEY environment variable.")
+            st.error(f"Error: {str(e)}")
 
-# Footer
-st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: #888; padding: 1rem;">
-    <p>Built with ❤️ using Streamlit & Google Gemini AI</p>
-    <small>AI Meeting Summarizer - Transform your meetings into actionable insights</small>
+<div style="text-align:center;padding:3rem 0 1rem 0;color:#ccc;font-size:0.78rem;">
+    Built with Streamlit & Gemini AI
 </div>
 """, unsafe_allow_html=True)
