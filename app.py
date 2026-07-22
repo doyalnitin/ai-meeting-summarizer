@@ -72,7 +72,7 @@ st.markdown("""
     }
 
     .stTabs [data-baseweb="tab-list"] {
-        gap: 4px !important;
+        gap: 0 !important;
         background: #f0f0f0 !important;
         border-radius: 12px !important;
         padding: 5px !important;
@@ -80,22 +80,22 @@ st.markdown("""
     }
     .stTabs [data-baseweb="tab"] {
         border-radius: 10px !important;
-        padding: 0.7rem 1.5rem !important;
-        font-size: 0.88rem !important;
+        padding: 0.7rem 2rem !important;
+        font-size: 0.9rem !important;
         font-weight: 500 !important;
-        color: #666 !important;
+        color: #777 !important;
         background: transparent !important;
         border: none !important;
-        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
         color: #333 !important;
-        background: #e8e8e8 !important;
+        background: #e4e4e4 !important;
     }
     .stTabs [aria-selected="true"] {
         background: #ffffff !important;
         color: #1a1a1a !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
         font-weight: 600 !important;
     }
     .stTabs [data-baseweb="tab-highlight"] {
@@ -310,7 +310,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-tab_audio, tab_file, tab_text = st.tabs(["🎤  Audio Recording", "📄  Document Upload", "✍️  Paste Transcript"])
+tab_audio, tab_file, tab_text = st.tabs(["Audio Recording", "Document Upload", "Paste Transcript"])
 
 contents_to_process = []
 should_process = False
