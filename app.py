@@ -18,15 +18,15 @@ st.markdown("""
 
     * { font-family: 'Inter', sans-serif !important; }
 
-    .stApp { background: #fafafa; }
+    .stApp { background: #0a0a0a; }
 
     section[data-testid="stSidebar"] {
-        background: #fff;
-        border-right: 1px solid #f0f0f0;
+        background: #111;
+        border-right: 1px solid #1a1a1a;
     }
     section[data-testid="stSidebar"] .stMarkdown h2,
     section[data-testid="stSidebar"] .stMarkdown h3 {
-        color: #1a1a1a;
+        color: #fff;
         font-weight: 600;
     }
 
@@ -43,7 +43,7 @@ st.markdown("""
     .title-section h1 {
         font-size: 2rem;
         font-weight: 700;
-        color: #0f0f0f;
+        color: #fff;
         letter-spacing: -0.02em;
         margin-bottom: 0.5rem;
     }
@@ -67,13 +67,13 @@ st.markdown("""
         border-radius: 100px;
         font-size: 0.78rem;
         font-weight: 500;
-        background: #f5f5f5;
-        color: #555;
+        background: #1a1a1a;
+        color: #aaa;
     }
 
     .stTabs [data-baseweb="tab-list"] {
         gap: 0 !important;
-        background: #f0f0f0 !important;
+        background: #1a1a1a !important;
         border-radius: 12px !important;
         padding: 5px !important;
         border: none !important;
@@ -83,19 +83,19 @@ st.markdown("""
         padding: 0.7rem 2rem !important;
         font-size: 0.9rem !important;
         font-weight: 500 !important;
-        color: #777 !important;
+        color: #666 !important;
         background: transparent !important;
         border: none !important;
         white-space: nowrap !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        color: #333 !important;
-        background: #e4e4e4 !important;
+        color: #ccc !important;
+        background: #2a2a2a !important;
     }
     .stTabs [aria-selected="true"] {
-        background: #ffffff !important;
-        color: #1a1a1a !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+        background: #222 !important;
+        color: #fff !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
         font-weight: 600 !important;
     }
     .stTabs [data-baseweb="tab-highlight"] {
@@ -106,53 +106,57 @@ st.markdown("""
     }
 
     .stFileUploader {
-        border: 1px dashed #ddd;
+        border: 1px dashed #333;
         border-radius: 10px;
-        background: #fff;
+        background: #111;
     }
 
     .stTextArea textarea {
         border-radius: 10px;
-        border: 1px solid #e8e8e8;
-        background: #fff;
+        border: 1px solid #2a2a2a;
+        background: #111;
+        color: #eee;
         font-size: 0.9rem;
     }
     .stTextArea textarea:focus {
-        border-color: #1a1a1a;
-        box-shadow: 0 0 0 1px #1a1a1a;
+        border-color: #555;
+        box-shadow: 0 0 0 1px #555;
+    }
+    .stTextArea textarea::placeholder {
+        color: #555;
     }
 
     div[data-testid="stButton"] > button {
-        background: #1a1a1a;
-        color: #fff;
+        background: #fff;
+        color: #0a0a0a;
         border: none;
         border-radius: 8px;
         padding: 0.55rem 1.5rem;
-        font-weight: 500;
+        font-weight: 600;
         font-size: 0.85rem;
         transition: all 0.15s ease;
     }
     div[data-testid="stButton"] > button:hover {
-        background: #333;
+        background: #e0e0e0;
         transform: translateY(-1px);
     }
 
     div[data-testid="stDownloadButton"] > button {
-        background: #fff;
-        color: #1a1a1a;
-        border: 1px solid #e0e0e0;
+        background: #1a1a1a;
+        color: #fff;
+        border: 1px solid #333;
         border-radius: 8px;
         font-weight: 500;
         font-size: 0.82rem;
     }
     div[data-testid="stDownloadButton"] > button:hover {
-        border-color: #1a1a1a;
-        background: #f9f9f9;
+        border-color: #555;
+        background: #222;
     }
 
     .summary-card {
-        background: #fff;
-        border: 1px solid #eee;
+        background: #111;
+        border: 1px solid #1e1e1e;
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1rem;
@@ -163,43 +167,44 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #999;
+        color: #555;
     }
     .summary-card p, .summary-card li {
-        color: #333;
+        color: #ccc;
         font-size: 0.92rem;
         line-height: 1.6;
     }
 
     .decision-item {
         padding: 0.75rem 1rem;
-        background: #fafafa;
+        background: #1a1a1a;
         border-radius: 8px;
         margin-bottom: 0.5rem;
-        border-left: 2px solid #1a1a1a;
+        border-left: 2px solid #fff;
         font-size: 0.9rem;
-        color: #333;
+        color: #ccc;
     }
 
     .action-item {
         padding: 0.85rem 1rem;
-        background: #fafafa;
+        background: #1a1a1a;
         border-radius: 8px;
         margin-bottom: 0.5rem;
         border-left: 2px solid #10b981;
     }
     .action-item .task {
         font-weight: 500;
-        color: #1a1a1a;
+        color: #eee;
         font-size: 0.9rem;
         margin-bottom: 0.3rem;
     }
     .action-item .meta {
         font-size: 0.78rem;
-        color: #999;
+        color: #666;
     }
     .action-item .meta span {
-        background: #f0f0f0;
+        background: #222;
+        color: #999;
         padding: 0.15rem 0.5rem;
         border-radius: 4px;
         margin-right: 0.4rem;
@@ -207,8 +212,8 @@ st.markdown("""
 
     .topic-item {
         padding: 1rem 1.2rem;
-        background: #fff;
-        border: 1px solid #eee;
+        background: #111;
+        border: 1px solid #1e1e1e;
         border-radius: 10px;
         margin-bottom: 0.75rem;
     }
@@ -216,7 +221,7 @@ st.markdown("""
         margin: 0 0 0.6rem 0;
         font-size: 0.92rem;
         font-weight: 600;
-        color: #1a1a1a;
+        color: #eee;
     }
     .topic-item ul {
         margin: 0;
@@ -224,7 +229,7 @@ st.markdown("""
     }
     .topic-item li {
         font-size: 0.85rem;
-        color: #666;
+        color: #888;
         line-height: 1.7;
     }
 
@@ -233,7 +238,7 @@ st.markdown("""
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: #bbb;
+        color: #444;
         margin-bottom: 1rem;
     }
 
@@ -242,9 +247,11 @@ st.markdown("""
 
     hr {
         border: none;
-        border-top: 1px solid #f0f0f0;
+        border-top: 1px solid #1a1a1a;
         margin: 1.5rem 0;
     }
+
+    .stAudio { border-radius: 8px; overflow: hidden; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -468,7 +475,7 @@ if should_process and contents_to_process:
             st.error(f"Error: {str(e)}")
 
 st.markdown("""
-<div style="text-align:center;padding:3rem 0 1rem 0;color:#ccc;font-size:0.78rem;">
+<div style="text-align:center;padding:3rem 0 1rem 0;color:#333;font-size:0.78rem;">
     Built with Streamlit & Gemini AI
 </div>
 """, unsafe_allow_html=True)
